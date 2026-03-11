@@ -6,7 +6,7 @@ const router = Router();
 // curl -d "url=https://google.com" http://localhost:3000/shorten
 router.post("/shorten", shorten);
 
-// curl http://localhost:3000/visit/a
-router.get("/visit/:code", visit);
+// curl http://localhost:3000/v/a
+router.get("/v/:code", visit);
 
 export default router;

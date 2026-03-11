@@ -5,6 +5,8 @@ import db from "./db";
 import cache from "./cache";
 import { isValidURL } from "./utils";
 
+const CACHE_EXPIRES_SEC = 60 * 60;
+
 export async function shorten(req: Request, res: Response) {
 	try {
 		const url: string = req.body["url"];
@@ -25,7 +27,7 @@ export async function shorten(req: Request, res: Response) {
 		const code = base62.encode(id);
 
 		// set in cache
-		await cache.set(code, url, { EX: 20 }); // EX -> seconds
+		await cache.set(code, url, { EX: CACHE_EXPIRES_SEC }); // EX -> seconds
 
 		res.status(201).json({ code });
 
@@ -63,7 +65,7 @@ export async function visit(req: Request, res: Response) {
 		// res.json({ url });
 		console.log("DB Hit!");
 
-		await cache.set(code, url, { EX: 20 });
+		await cache.set(code, url, { EX: CACHE_EXPIRES_SEC });
 
 		res.redirect(url);
 	} catch (err) {
