@@ -1,10 +1,10 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path"
 
 // dotenv
-const env =
-	process.env.NODE_ENV === "production" ? "production" : "development";
+const env = process.env.NODE_ENV === "production" ? "production" : "development";
 const envPath = path.resolve(process.cwd(), `.env.${env}`);
 dotenv.config({ quiet: true, path: envPath });
 
@@ -24,7 +24,6 @@ app.use("/", router);
 
 import "./db";
 import "./cache";
-import path from "node:path";
 
 // start server
 const SERVER_PORT = parseInt(process.env.SERVER_PORT || "5000");

@@ -4,12 +4,16 @@ import base62 from "base62";
 import db from "./db";
 import cache from "./cache";
 import { isValidURL } from "./utils";
-import { CODE_CACHE_EXPIRES_SEC, SHORTEN_RATE_LIMIT } from "./constants";
+import {
+	CODE_CACHE_EXPIRES_SEC,
+	SHORTEN_RATE_LIMIT,
+	SHORTEN_RATE_LIMIT_EXPIRES_SEC,
+} from "./constants";
 
 export async function shorten(req: Request, res: Response) {
 	try {
 		// if rate limit reached
-		const rate_limit_key = `gen_count:${req.ip}`;
+		const rate_limit_key = `gen_ip:${req.ip}`;
 		const gen_count = await cache.get(rate_limit_key);
 		if (gen_count && parseInt(gen_count) >= SHORTEN_RATE_LIMIT) {
 			return res
@@ -37,7 +41,13 @@ export async function shorten(req: Request, res: Response) {
 		await cache.set(`code:${code}`, url, { EX: CODE_CACHE_EXPIRES_SEC }); // EX -> seconds
 
 		// for rate limiting
-		await cache.incr(rate_limit_key);
+		if (!gen_count) {
+			await cache.set(rate_limit_key, 1, {
+				EX: SHORTEN_RATE_LIMIT_EXPIRES_SEC,
+			});
+		} else {
+			await cache.incr(rate_limit_key);
+		}
 
 		res.status(201).json({ code });
 

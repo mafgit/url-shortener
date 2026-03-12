@@ -39,7 +39,7 @@ CMD ["npm", "run", "dev"]
 
 # ---------------------------------------
 # to run a container based on postgres image
-# docker run -d --name postgres-container -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root -e POSTGRES_DB=urlshortener postgres:16
+# docker run -d --name postgres-container -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root -e POSTGRES_DB=url-shortener postgres:16
 # -d detached mode i.e. background to avoid flooding of logs, --name optional container name, -p port mapping local:container, -e environment variable
 
 # ---------------------------------------
@@ -48,7 +48,7 @@ CMD ["npm", "run", "dev"]
 
 # ---------------------------------------
 # to create table etc inside postgres container:
-# docker exec -it postgres-container psql -U postgres -d urlshortener
+# docker exec -it postgres-container psql -U postgres -d url-shortener
 # exec to run command INSIDE container
 # -it interactive terminal, otherwise we cant interact in the terminal
 # psql is command line tool to interact with postgres
@@ -84,6 +84,6 @@ CMD ["npm", "run", "dev"]
 # docker build -t backend-image .
 # docker network create my-network
 # docker run -d --network my-network --name redis-container -p 6379:6379 redis:8.6
-# docker run -d --network my-network --name postgres-container -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root -e POSTGRES_DB=urlshortener postgres:16
+# docker run -d --network my-network --name postgres-container -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root -e POSTGRES_DB=url-shortener postgres:16
 # docker run -d --network my-network --name backend-container -p 5000:5000 $(pwd):/app backend-image
 # docker run -d --network my-network --name frontend-container -p 3000:3000 $(pwd):/app frontend-image

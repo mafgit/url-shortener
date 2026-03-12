@@ -30,14 +30,22 @@ export default function ShortenForm() {
 				);
 
 				if (!res.ok) {
-					throw new Error("HTTP Error " + res.status);
+					if (res.status === 429) {
+						throw new Error(
+							"Too many requests, please try again later.",
+						);
+					} else {
+						throw new Error("HTTP Error " + res.status);
+					}
 				}
 
 				const { code } = await res.json();
 				setShortUrl(window.location.origin + "/v/" + code);
-			} catch (e) {
-				console.error(e);
-				alert("An unexpected error occurred, please try again later.");
+			} catch (e: unknown) {
+				// console.error(e);
+				if (e instanceof Error) {
+					alert(e.message);
+				}
 			}
 		} catch {
 			alert("Please enter a valid URL");
