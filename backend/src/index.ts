@@ -1,13 +1,21 @@
 import express from "express";
-import cors from 'cors'
+import cors from "cors";
 import dotenv from "dotenv";
 
-dotenv.config({ quiet: true });
+// dotenv
+const env =
+	process.env.NODE_ENV === "production" ? "production" : "development";
+const envPath = path.resolve(process.cwd(), `.env.${env}`);
+dotenv.config({ quiet: true, path: envPath });
 
+// server
 const app = express();
-app.use(cors({
-	origin: 'http://frontend-container:3000'
-}))
+app.set("trust proxy", true); // if behind reverse proxy, req.ip is localhost, so need this set
+app.use(
+	cors({
+		origin: process.env.CORS_ORIGIN,
+	}),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -16,6 +24,7 @@ app.use("/", router);
 
 import "./db";
 import "./cache";
+import path from "node:path";
 
 // start server
 const SERVER_PORT = parseInt(process.env.SERVER_PORT || "5000");

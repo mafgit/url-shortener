@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { shorten, visit } from "./controller";
+import { shorten, visit, health } from "./controller";
 
 const router = Router();
 
@@ -8,5 +8,7 @@ router.post("/shorten", shorten);
 
 // curl http://localhost:5000/v/a
 router.get("/v/:code", visit);
+
+router.get('/health', health)
 
 export default router;

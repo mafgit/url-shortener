@@ -4,18 +4,25 @@ import base62 from "base62";
 import db from "./db";
 import cache from "./cache";
 import { isValidURL } from "./utils";
-
-const CACHE_EXPIRES_SEC = 60 * 60;
+import { CODE_CACHE_EXPIRES_SEC, SHORTEN_RATE_LIMIT } from "./constants";
 
 export async function shorten(req: Request, res: Response) {
 	try {
+		// if rate limit reached
+		const rate_limit_key = `gen_count:${req.ip}`;
+		const gen_count = await cache.get(rate_limit_key);
+		if (gen_count && parseInt(gen_count) >= SHORTEN_RATE_LIMIT) {
+			return res
+				.status(429)
+				.json({ error: "Rate limit exceeded! Try again later." });
+		}
+
 		const url: string = req.body["url"];
 
-		// url regex
 		if (!isValidURL(url))
 			return res.status(400).json({ error: "Invalid URL" });
 
-		// insert in db, get id
+		// insert record in db, get id/number to encode to base62 for short code
 		const { rows } = await db.query(
 			"insert into codes (code, url) values ($1, $2) returning id",
 			["temp", url], // no code yet
@@ -27,7 +34,10 @@ export async function shorten(req: Request, res: Response) {
 		const code = base62.encode(id);
 
 		// set in cache
-		await cache.set(code, url, { EX: CACHE_EXPIRES_SEC }); // EX -> seconds
+		await cache.set(`code:${code}`, url, { EX: CODE_CACHE_EXPIRES_SEC }); // EX -> seconds
+
+		// for rate limiting
+		await cache.incr(rate_limit_key);
 
 		res.status(201).json({ code });
 
@@ -44,7 +54,7 @@ export async function visit(req: Request, res: Response) {
 		const code = req.params.code as string;
 
 		// cache check
-		const cached_url = await cache.get(code);
+		const cached_url = await cache.get(`code:${code}`);
 		if (cached_url) {
 			console.log("Cache Hit!");
 			// res.json({ url });
@@ -65,11 +75,15 @@ export async function visit(req: Request, res: Response) {
 		// res.json({ url });
 		console.log("DB Hit!");
 
-		await cache.set(code, url, { EX: CACHE_EXPIRES_SEC });
+		await cache.set(`code:${code}`, url, { EX: CODE_CACHE_EXPIRES_SEC });
 
 		res.redirect(url);
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: "Internal Server Error" });
 	}
+}
+
+export async function health(req: Request, res: Response) {
+	res.json({ status: "ok" });
 }
