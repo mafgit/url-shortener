@@ -14,7 +14,7 @@ export default function ShortenForm() {
 			new URL(urlInput); // testing url valid
 
             try {
-                const res = await fetch("http://localhost:5000/shorten", {
+                const res = await fetch("http://backend-container:5000/shorten", {
                     method: "POST",
                     body: JSON.stringify({ url: urlInput }),
                     headers: {
@@ -27,7 +27,7 @@ export default function ShortenForm() {
                 }
     
                 const { code } = await res.json();
-                setShortUrl("http://localhost:3000/v/" + code);
+                setShortUrl(window.location.origin + "/v/" + code);
             } catch (e) {
                 console.error(e);
                 alert("An unexpected error occurred, please try again later.")
@@ -41,7 +41,7 @@ export default function ShortenForm() {
 	};
 
 	return (
-		<div className="flex flex-col px-4 py-8 bg-blue-400 max-w-[500px] gap-4 rounded-md items-center justify-center text-center">
+		<div className="flex flex-col px-4 py-8 bg-blue-400 max-w-125 gap-4 rounded-md items-center justify-center text-center">
 			<form
 				onSubmit={submitHandler}
 				className="flex w-full flex-col p-4 gap-4 items-center justify-center text-center"

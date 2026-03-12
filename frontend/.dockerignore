@@ -1,7 +1,8 @@
 node_modules/
-.git/
+.next/
+out/
 .env
 .env.*
+.git/
 .gitignore
 Dockerfile
-dist/
