@@ -70,6 +70,10 @@ CMD ["npm", "run", "dev"]
 # docker rm container-name
 
 # ---------------------------------------
+# to inject env file when running:
+# docker run --env-file .env.development ...
+
+# ---------------------------------------
 # binding container code folder to local folder so that live changes are reflected in the docker image and no need to rebuild image (unless changing package.json or something like that)
 # docker run .... -v $(pwd):/app image-name
 # only useful in development

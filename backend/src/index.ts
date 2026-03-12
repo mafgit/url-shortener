@@ -13,7 +13,7 @@ const app = express();
 app.set("trust proxy", true); // if behind reverse proxy, req.ip is localhost, so need this set
 app.use(
 	cors({
-		origin: process.env.CORS_ORIGIN,
+		origin: process.env.CORS_ORIGIN || '*',
 	}),
 );
 app.use(express.json());
