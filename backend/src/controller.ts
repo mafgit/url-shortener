@@ -45,6 +45,8 @@ export async function shorten(req: Request, res: Response) {
 			await cache.set(rate_limit_key, 1, {
 				EX: SHORTEN_RATE_LIMIT_EXPIRES_SEC,
 			});
+			// race condition can happen: i.e. two links might be generated even if one limit is left, if at same time
+			// because two separate operations: .get and .set
 		} else {
 			await cache.incr(rate_limit_key);
 		}
