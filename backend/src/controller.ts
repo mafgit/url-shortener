@@ -22,14 +22,28 @@ export async function shorten(req: Request, res: Response) {
 		}
 
 		const url: string = req.body["url"];
-
 		if (!isValidURL(url))
 			return res.status(400).json({ error: "Invalid URL" });
 
+		const expires: string = req.body["expires"];
+		let expiresAt: Date | null = new Date();
+		if (expires === "1d") {
+			expiresAt.setDate(expiresAt.getDate() + 1);
+		} else if (expires === "1w") {
+			expiresAt.setDate(expiresAt.getDate() + 7);
+		} else if (expires === "1m") {
+			expiresAt.setDate(expiresAt.getDate() + 30);
+		} else if (expires === "1y") {
+			expiresAt.setDate(expiresAt.getDate() + 365);
+		} else {
+			expiresAt = null;
+		}
+
 		// insert record in db, get id/number to encode to base62 for short code
+
 		const { rows } = await db.query(
-			"insert into codes (code, url) values ($1, $2) returning id",
-			["temp", url], // no code yet
+			"insert into codes (code, url, ip, expires_at) values ($1, $2, $3, $4) returning id",
+			["temp", url, req.ip, expiresAt], // no code yet
 		);
 
 		const { id } = rows[0];
@@ -90,6 +104,8 @@ export async function visit(req: Request, res: Response) {
 		await cache.set(`code:${code}`, url, { EX: CODE_CACHE_EXPIRES_SEC });
 
 		res.redirect(url);
+
+		// todo: update clicks
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: "Internal Server Error" });
@@ -98,4 +114,18 @@ export async function visit(req: Request, res: Response) {
 
 export async function health(req: Request, res: Response) {
 	res.json({ status: "ok" });
+}
+
+export async function check_clicks(req: Request, res: Response) {
+	try {
+		// todo: check if ip is of owner
+		const { rows } = await db.query(
+			"select count(id) from clicks where code = $1",
+			[req.params.code],
+		); // todo: where ip != req.ip and also unique counts check
+		res.json({ clicks: rows[0].count });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: "Internal Server Error" });
+	}
 }

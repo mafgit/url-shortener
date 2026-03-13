@@ -1,4 +1,5 @@
--- drop table codes;
+drop table clicks;
+drop table codes;
 
 create table if not exists codes (
 	id bigserial primary key, -- bigserial gives more possible values than serial, without any significant performance difference
@@ -11,7 +12,7 @@ create table if not exists codes (
 
 create index if not exists idx_codes_code on codes (code);
 
-create table if not exists visits (
+create table if not exists clicks (
 	id bigserial primary key,
 	code_id bigint references codes(id) on delete cascade not null,
 	ip inet not null,

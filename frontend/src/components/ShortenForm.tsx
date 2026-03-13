@@ -1,11 +1,17 @@
 "use client";
+import { ShortURL } from "@/types/ShortURL";
 import { useState } from "react";
 import { FaCopy, FaLink } from "react-icons/fa6";
 
-export default function ShortenForm() {
+interface Props {
+	setShortUrls: React.Dispatch<React.SetStateAction<ShortURL[]>>;
+}
+
+export default function ShortenForm({ setShortUrls }: Props) {
 	const [urlInput, setUrlInput] = useState("");
 	const [shortUrl, setShortUrl] = useState("");
 	const [disabled, setDisabled] = useState(false);
+	const [expires, setExpires] = useState("never");
 
 	const submitHandler = async (e: React.SubmitEvent) => {
 		e.preventDefault();
@@ -22,7 +28,7 @@ export default function ShortenForm() {
 					process.env.NEXT_PUBLIC_BACKEND_URL + "/shorten",
 					{
 						method: "POST",
-						body: JSON.stringify({ url: urlInput }),
+						body: JSON.stringify({ url: urlInput, expires }),
 						headers: {
 							"Content-Type": "application/json",
 						},
@@ -34,13 +40,46 @@ export default function ShortenForm() {
 						throw new Error(
 							"Too many requests, please try again later.",
 						);
-					} else {
-						throw new Error("HTTP Error " + res.status);
+					} else if (res.status === 500) {
+						throw new Error(
+							"Unexpected server error, please try again later.",
+						);
 					}
+					throw new Error("HTTP Error " + res.status);
 				}
 
 				const { code } = await res.json();
-				setShortUrl(window.location.origin + "/v/" + code);
+
+				const finalShortUrl = window.location.origin + "/v/" + code;
+				setShortUrl(finalShortUrl);
+
+				// updating localstorage and list of short urls
+				const shortUrlEntry: ShortURL = {
+					shortUrl: finalShortUrl,
+					createdAt: new Date().toLocaleString(),
+					fullUrl: urlInput,
+					expires: expires,
+				};
+				try {
+					localStorage.setItem(
+						"shortUrls",
+						JSON.stringify([
+							shortUrlEntry,
+							...JSON.parse(
+								localStorage.getItem("shortUrls") || "[]",
+							),
+						]),
+					);
+				} catch {
+					// localstorage was corrupted
+					localStorage.setItem(
+						"shortUrls",
+						JSON.stringify([shortUrlEntry]),
+					);
+				}
+				setShortUrls((prev) => {
+					return [shortUrlEntry, ...prev];
+				});
 			} catch (e: unknown) {
 				// console.error(e);
 				if (e instanceof Error) {
@@ -55,7 +94,7 @@ export default function ShortenForm() {
 	};
 
 	return (
-		<div className="flex flex-col  w-full max-w-125 gap-4 items-center justify-center text-center">
+		<div className="flex flex-col w-full max-w-125 gap-4 items-center justify-center text-center">
 			<form
 				onSubmit={submitHandler}
 				className="flex w-full flex-col p-4 gap-4 items-center justify-center text-center bg-linear-to-br from-[#8eccff] to-[#4bf5bc] px-4 py-8 rounded-3xl"
@@ -64,18 +103,40 @@ export default function ShortenForm() {
 					Generate Short URL Now!
 				</h2>
 				<input
+					id="url"
+					type="url"
 					placeholder="Paste a long URL"
 					className="w-full px-4 py-2 rounded-2xl bg-[#ffffffa6] border-2 border-solid border-[#52a9ffa3] outline-none placeholder:text-black/60"
 					required
 					onChange={(e) => setUrlInput(e.target.value)}
 				/>
-				<button
-					disabled={disabled}
-					className="bg-[#1c1c1c] not-disabled:hover:bg-[#353535] font-semibold transition-all duration-300 cursor-pointer text-white disabled:opacity-50 disabled:cursor-not-allowed w-full px-4 py-2 rounded-xl flex gap-2 items-center justify-center"
-				>
-					<FaLink />
-					<p>{disabled ? "Processing..." : "Shorten!"}</p>
-				</button>
+				<div className="flex items-center justify-between w-full gap-2">
+					<button
+						disabled={disabled}
+						className="bg-[#1c1c1c] not-disabled:hover:bg-[#353535] font-semibold transition-all duration-300 cursor-pointer text-white disabled:opacity-50 disabled:cursor-not-allowed w-full px-4 py-2 rounded-xl flex gap-2 items-center justify-center"
+					>
+						<FaLink />
+						<p>{disabled ? "Processing..." : "Shorten!"}</p>
+					</button>
+
+					<div className="flex flex-col  text-center bg-white p-1 rounded-md">
+						<label htmlFor="expires" className="text-xs">
+							Expires:
+						</label>
+						<select
+							defaultValue={expires}
+							onChange={(e) => setExpires(e.target.value)}
+							id="expires"
+							className="text-xs font-semibold rounded-md outline-none cursor-pointer"
+						>
+							<option value="never">Never</option>
+							<option value="1d">1d</option>
+							<option value="1w">1w</option>
+							<option value="1m">1m</option>
+							<option value="1y">1y</option>
+						</select>
+					</div>
+				</div>
 
 				<div
 					className={
@@ -89,13 +150,13 @@ export default function ShortenForm() {
 						Short URL:
 					</h3>
 					<div
-						className="bg-white px-2 py-1 cursor-pointer hover:opacity-70 transition-all duration-300 rounded-full w-max flex gap-2 items-center justify-center"
+						className="bg-white px-3 py-1 cursor-pointer hover:opacity-70 transition-all duration-300 rounded-full w-max flex gap-2 items-center justify-center"
 						onClick={() => {
 							navigator.clipboard.writeText(shortUrl);
 							alert("Copied");
 						}}
 					>
-						<p className="w-max font-mono">{shortUrl}</p>
+						<p className="font-mono wrap-anywhere">{shortUrl}</p>
 						<FaCopy className="text-sm" />
 					</div>
 				</div>
