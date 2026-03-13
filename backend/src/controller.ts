@@ -78,34 +78,44 @@ export async function shorten(req: Request, res: Response) {
 export async function visit(req: Request, res: Response) {
 	try {
 		const code = req.params.code as string;
+		// console.log(code);
 
 		// cache check
+		let redirect_url = "";
 		const cached_url = await cache.get(`code:${code}`);
 		if (cached_url) {
 			console.log("Cache Hit!");
+			redirect_url = cached_url;
+		} else {
+			// db hit
+			const { rows, rowCount } = await db.query(
+				"select url from codes where code = $1 limit 1",
+				[code],
+			);
+
+			if (!rowCount) {
+				return res.status(404).json({ error: "URL Not Found" });
+			}
+
+			const { url } = rows[0];
 			// res.json({ url });
-			return res.redirect(cached_url);
+			console.log("DB Hit!");
+
+			await cache.set(`code:${code}`, url, {
+				EX: CODE_CACHE_EXPIRES_SEC,
+			});
+
+			redirect_url = url;
 		}
 
-		// db hit
-		const { rows, rowCount } = await db.query(
-			"select url from codes where code = $1 limit 1",
-			[code],
+		// update clicks
+		// todo: use cache for clicks and automate script for db updation
+		await db.query(
+			"insert into clicks (code, ip, user_agent) values ($1, $2, $3)",
+			[code, req.ip, req.headers["user-agent"]],
 		);
 
-		if (!rowCount) {
-			return res.status(404).json({ error: "URL Not Found" });
-		}
-
-		const { url } = rows[0];
-		// res.json({ url });
-		console.log("DB Hit!");
-
-		await cache.set(`code:${code}`, url, { EX: CODE_CACHE_EXPIRES_SEC });
-
-		res.redirect(url);
-
-		// todo: update clicks
+		res.redirect(redirect_url);
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: "Internal Server Error" });
@@ -119,6 +129,8 @@ export async function health(req: Request, res: Response) {
 export async function check_clicks(req: Request, res: Response) {
 	try {
 		// todo: check if ip is of owner
+
+		const cached = await cache.get("");
 		const { rows } = await db.query(
 			"select count(id) from clicks where code = $1",
 			[req.params.code],

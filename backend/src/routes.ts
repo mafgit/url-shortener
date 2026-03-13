@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { shorten, visit, health } from "./controller";
+import { shorten, visit, health, check_clicks } from "./controller";
 
 const router = Router();
 
@@ -10,5 +10,7 @@ router.post("/shorten", shorten);
 router.get("/v/:code", visit);
 
 router.get('/health', health)
+
+router.get('/clicks/:code', check_clicks)
 
 export default router;

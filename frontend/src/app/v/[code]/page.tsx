@@ -6,6 +6,8 @@ interface Props {
 
 import { redirect } from "next/navigation";
 
+// todo: fix double visit
+
 export default async function Visit({ params }: Props) {
 	const { code } = await params;
 
@@ -18,10 +20,10 @@ export default async function Visit({ params }: Props) {
 			},
 		);
 
-		console.log(res);
-		if (res.status >= 300 && res.status < 400) {
+		// console.log(res);
+		if (res.status === 302) {
 			const url = res.headers.get("location") as string;
-			console.log(url);
+			// console.log(url);
 			redirect(url);
 		} else {
 			throw new Error("URL not found");
