@@ -6,26 +6,32 @@ import { ShortURL } from "@/types/ShortURL";
 import { useEffect, useState } from "react";
 
 export default function FormAndList() {
-	const [shortUrls, setShortUrls] = useState<ShortURL[]>([]);
+	const [shortUrls, setShortUrls] = useState<ShortURL[] | undefined>(
+		undefined,
+	);
+
 	useEffect(() => {
-        if (typeof window === "undefined") return;
-        
+		if (typeof window === "undefined") return;
+
 		const local = localStorage.getItem("shortUrls");
-		if (local) {
-			try {
+		try {
+			if (local) {
 				// eslint-disable-next-line react-hooks/set-state-in-effect
 				setShortUrls(JSON.parse(local));
-			} catch {
-				localStorage.setItem("shortUrls", "[]");
+			} else {
+				setShortUrls([]);
 			}
+		} catch {
+			localStorage.setItem("shortUrls", "[]");
+			setShortUrls([]);
 		}
 	}, []);
 
 	return (
-		<div className="flex flex-col items-center justify-center gap-8 w-full">
+		<main className="flex flex-col items-center justify-center gap-8 w-full">
 			<ShortenForm setShortUrls={setShortUrls} />
 
 			<ShortUrlList shortUrls={shortUrls} />
-		</div>
+		</main>
 	);
 }

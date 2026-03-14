@@ -10,7 +10,6 @@ export default function Home() {
 
 				<FormAndList />
 			</div>
-
 		</div>
 	);
 }

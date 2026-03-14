@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FaCopy, FaLink } from "react-icons/fa6";
 
 interface Props {
-	setShortUrls: React.Dispatch<React.SetStateAction<ShortURL[]>>;
+	setShortUrls: React.Dispatch<React.SetStateAction<ShortURL[] | undefined>>;
 }
 
 export default function ShortenForm({ setShortUrls }: Props) {
@@ -59,6 +59,7 @@ export default function ShortenForm({ setShortUrls }: Props) {
 					createdAt: new Date().toLocaleString(),
 					fullUrl: urlInput,
 					expires: expires,
+					clicks: 0,
 				};
 				try {
 					localStorage.setItem(
@@ -78,7 +79,7 @@ export default function ShortenForm({ setShortUrls }: Props) {
 					);
 				}
 				setShortUrls((prev) => {
-					return [shortUrlEntry, ...prev];
+					return [shortUrlEntry, ...(prev || [])];
 				});
 			} catch (e: unknown) {
 				// console.error(e);
@@ -104,9 +105,10 @@ export default function ShortenForm({ setShortUrls }: Props) {
 				</h2>
 				<textarea
 					id="url"
+					spellCheck={false}
 					// type="url"
 					placeholder="Paste a long URL"
-					className="w-full px-4 py-2 rounded-2xl bg-[#ffffffa6] resize-none overflow-hidden h-[42px] transition-[height] duration-150 focus:h-[100px] border-2 border-solid border-[#52a9ffa3] outline-none placeholder:text-black/60"
+					className="w-full px-4 py-2 rounded-2xl bg-[#ffffffa6] resize-none overflow-hidden h-[42px] transition-[height] duration-300 focus:h-[100px] border-2 border-solid border-[#52a9ffa3] outline-none placeholder:text-black/60"
 					required
 					onChange={(e) => setUrlInput(e.target.value)}
 				></textarea>

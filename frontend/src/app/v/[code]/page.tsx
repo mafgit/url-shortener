@@ -5,6 +5,7 @@ interface Props {
 }
 
 import { redirect } from "next/navigation";
+import { FaMinimize } from "react-icons/fa6";
 
 // todo: fix double visit
 
@@ -32,6 +33,16 @@ export default async function Visit({ params }: Props) {
 		// dont wanna catch this specific error otherwise redirect wouldnt take place, so rethrow it
 		if (e instanceof Error && e.message === "NEXT_REDIRECT") throw e;
 
-		return <p>Error, this URL does not exist.</p>;
+		return (
+			<div className="text-center flex flex-col gap-2 min-h-screen items-center justify-center p-3">
+				<h1 className="text-3xl font-extrabold flex gap-3 text-center flex-wrap items-center justify-center">
+					<FaMinimize className="text-[#51b1ff]" />{" "}
+					<span>URL Shortener</span>
+				</h1>
+				<p className="text-lg font-semibold text-red-600">
+					Error: This URL does not exist.
+				</p>
+			</div>
+		);
 	}
 }
