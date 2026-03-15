@@ -10,12 +10,12 @@ services: # now service names will be used as host names (in connection strings)
 
     postgres-service:
         image: postgres:16
-        environment:
+        environment:    
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: root
             POSTGRES_DB: url-shortener
             # or use this list+hyphen+equal syntax -> - POSTGRES_USER=postgres
-        ports:
+        ports:  
             - "5432:5432"
         volumes: # to make data persist when container closes
             - pgdata:/var/lib/postgresql/data
@@ -39,6 +39,8 @@ services: # now service names will be used as host names (in connection strings)
         depends_on: # recommended
             - redis-service
             - postgres-service
+        image: # optional, for dockerhub push
+            mafgit/url-shortener-backend:latest
 
     frontend-service:
         build: ./frontend
@@ -51,6 +53,8 @@ services: # now service names will be used as host names (in connection strings)
             - ./frontend/.env.development
         depends_on:
             - backend-service
+        image:
+            mafgit/url-shortener-frontend:latest
 
 # named volumes mentioned above needed to be mentioned here again
 volumes:
