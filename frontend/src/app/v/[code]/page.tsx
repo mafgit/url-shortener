@@ -14,7 +14,7 @@ export default async function Visit({ params }: Props) {
 
 	try {
 		const res = await fetch(
-			process.env.NEXT_PUBLIC_BACKEND_URL + "/v/" + code,
+			process.env.INTERNAL_BACKEND_URL + "/v/" + code,
 			{
 				redirect: "manual", // stop before going to the url, to avoid double redirects,
 				cache: "no-store", // to avoid stale effect due to next.js caching

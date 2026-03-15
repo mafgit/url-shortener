@@ -126,11 +126,9 @@ export async function health(req: Request, res: Response) {
 	res.json({ status: "ok" });
 }
 
-export async function check_clicks(req: Request, res: Response) {
+export async function checkClicks(req: Request, res: Response) {
 	try {
 		// todo: check if ip is of owner
-
-		const cached = await cache.get("");
 		const { rows } = await db.query(
 			"select count(id) from clicks where code = $1",
 			[req.params.code],

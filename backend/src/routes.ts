@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { shorten, visit, health, check_clicks } from "./controller";
+import { shorten, visit, health, checkClicks } from "./controller";
 
 const router = Router();
 
@@ -11,6 +11,6 @@ router.get("/v/:code", visit);
 
 router.get('/health', health)
 
-router.get('/clicks/:code', check_clicks)
+router.get('/clicks/:code', checkClicks)
 
 export default router;

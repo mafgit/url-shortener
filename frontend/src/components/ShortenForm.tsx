@@ -108,7 +108,7 @@ export default function ShortenForm({ setShortUrls }: Props) {
 					spellCheck={false}
 					// type="url"
 					placeholder="Paste a long URL"
-					className="w-full px-4 py-2 rounded-2xl bg-[#ffffffa6] resize-none overflow-hidden h-[42px] transition-[height] duration-300 focus:h-[100px] border-2 border-solid border-[#52a9ffa3] outline-none placeholder:text-black/60"
+					className="w-full px-4 py-2 rounded-2xl bg-[#ffffffa6] text-sm resize-none overflow-hidden h-[42px] transition-[height] duration-300 focus:h-[100px] border-2 border-solid border-[#52a9ffa3] outline-none placeholder:text-black/60"
 					required
 					onChange={(e) => setUrlInput(e.target.value)}
 				></textarea>

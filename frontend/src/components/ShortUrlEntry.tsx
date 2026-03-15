@@ -19,10 +19,27 @@ export function ShortUrlEntry({ entry }: { entry: ShortURL }) {
 			);
 
 			if (!res.ok) {
-				if (res.status === 403) {
-					alert("You didn't create this short URL.");
-				} else if (res.status === 400) {
-					alert("URL is either invalid or expired");
+				if (
+					res.status === 403 ||
+					res.status === 401 ||
+					res.status === 400
+				) {
+					if (res.status === 403 || res.status === 401)
+						alert("You didn't create this short URL.");
+					else alert("URL is either invalid or expired");
+
+					// delete from ls
+					const ls = JSON.parse(
+						localStorage.getItem("shortUrls") || "[]",
+					) as ShortURL[];
+					localStorage.setItem(
+						"shortUrls",
+						JSON.stringify(
+							ls.filter(
+								(item) => item.shortUrl !== entry.shortUrl,
+							),
+						),
+					);
 				} else {
 					alert("Unexpected Error");
 					console.error(res);
@@ -91,7 +108,7 @@ export function ShortUrlEntry({ entry }: { entry: ShortURL }) {
 							? entry.fullUrl
 							: entry.fullUrl.slice(0, 50) + "..."}
 						<span
-							className="ml-1 font-sans text-xs bg-[#6e6e6e] text-[#e7e7e7] px-1.25 py-px hover:opacity-100 opacity-80 transition-opacity duration-300 rounded-sm text-nowrap"
+							className="ml-1 font-sans text-xs bg-[#4b4b4b] text-[#e7e7e7] px-1.25 py-px hover:opacity-100 opacity-80 transition-opacity duration-300 rounded-sm text-nowrap"
 							onClick={(e) => {
 								e.stopPropagation();
 								setShowFullUrlFully(!showFullUrlFully);

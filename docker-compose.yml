@@ -1,0 +1,62 @@
+# spaces to be used instead of tabs!
+# automatically makes a private docker network
+services: # now service names will be used as host names (in connection strings), not container names
+    redis-service:
+        image: redis:8.6
+        ports:
+            - "6379:6379" # quotes needed for port
+            # specifying port mapping not needed for a service unless we wanna connect to it from our pc/host directly
+            # no need here, but needed for frontend
+
+    postgres-service:
+        image: postgres:16
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: root
+            POSTGRES_DB: url-shortener
+            # or use this list+hyphen+equal syntax -> - POSTGRES_USER=postgres
+        ports:
+            - "5432:5432"
+        volumes: # to make data persist when container closes
+            - pgdata:/var/lib/postgresql/data
+            - ./backend/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+            # pgdata is a named volume that is gonna be created in the given container directory
+            # (/var/lib/postgresql/data is official directory for postgres)
+            # /docker-entrypoint-initdb.d is a special directory where if a file is mount it runs only once when first time created
+            # folder of scripts could be mounted too, in that case no need to specify /file.sql at end
+
+    backend-service:
+        build: ./backend
+        ports:
+            - "5000:5000"
+        volumes: # another type of volume -> bind mount (for development and changes reflection in container)
+            # starts with . or / or ~ means bind mount not named volume
+            # ./backend local/host folder bound to /app container directory
+            - ./backend:/app
+            - /app/node_modules # docker trick to prevent our node_modules folder from mounting in place of container's fresh installed node_modules
+        env_file:
+            - ./backend/.env.development
+        depends_on: # recommended
+            - redis-service
+            - postgres-service
+
+    frontend-service:
+        build: ./frontend
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        env_file:
+            - ./frontend/.env.development
+        depends_on:
+            - backend-service
+
+# named volumes mentioned above needed to be mentioned here again
+volumes:
+    pgdata:
+
+# docker compose up -d (detached)
+# docker compose up --build frontend (to specifically rebuild frontend if changed anything major)
+# docker compose down -v (-v deletes containers, volumes, etc, used when db is corrupted)
+# docker compose exec frontend-service cat file.txt (to run command inside one service)

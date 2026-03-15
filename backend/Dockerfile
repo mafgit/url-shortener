@@ -1,5 +1,5 @@
-FROM node:20
-# node:20 is the base docker image that has npm and node v20 preinstalled
+FROM node:22-alpine
+# node:22-alpine is the base docker image that has npm and node v20 and some other things are preinstalled
 
 # container's directory will be:
 WORKDIR /app
@@ -10,7 +10,8 @@ WORKDIR /app
 # so that docker is able to prevent dependencies reinstalling each time code changes
 
 # COPY package*.json .
-COPY package.json package-lock.json .
+COPY package.json .
+COPY package-lock.json .
 
 # RUN is to run commands required when building an image
 RUN npm ci
