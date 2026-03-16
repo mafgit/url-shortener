@@ -1,5 +1,6 @@
 "use client";
 import { ShortURL } from "@/types/ShortURL";
+import { deleteEntryFromLocalStorage, updateClicksInLocalStorage } from "@/utils/localStorage";
 import { useState } from "react";
 import { FaArrowRight } from "react-icons/fa6";
 
@@ -19,7 +20,9 @@ export function ShortUrlEntry({ entry }: { entry: ShortURL }) {
 			);
 
 			if (!res.ok) {
-				if (
+				if (res.status === 429) {
+					alert("Rate limit exceeded. Please try again later.");
+				} else if (
 					res.status === 403 ||
 					res.status === 401 ||
 					res.status === 400
@@ -29,17 +32,7 @@ export function ShortUrlEntry({ entry }: { entry: ShortURL }) {
 					else alert("URL is either invalid or expired");
 
 					// delete from ls
-					const ls = JSON.parse(
-						localStorage.getItem("shortUrls") || "[]",
-					) as ShortURL[];
-					localStorage.setItem(
-						"shortUrls",
-						JSON.stringify(
-							ls.filter(
-								(item) => item.shortUrl !== entry.shortUrl,
-							),
-						),
-					);
+					deleteEntryFromLocalStorage(entry)
 				} else {
 					alert("Unexpected Error");
 					console.error(res);
@@ -51,21 +44,7 @@ export function ShortUrlEntry({ entry }: { entry: ShortURL }) {
 			const { clicks } = await res.json();
 			setClicks(clicks);
 
-			// update clicks in localstorage
-			try {
-				const ls = JSON.parse(
-					localStorage.getItem("shortUrls") || "[]",
-				);
-				for (const e of ls) {
-					if (e.shortUrl === entry.shortUrl) {
-						e.clicks = clicks;
-						break;
-					}
-				}
-				localStorage.setItem("shortUrls", JSON.stringify(ls));
-			} catch (e) {
-				console.error(e);
-			}
+			updateClicksInLocalStorage(entry.shortUrl, clicks);
 		} catch (e) {
 			alert("Unexpected Error");
 			console.error(e);

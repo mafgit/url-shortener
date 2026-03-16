@@ -14,7 +14,10 @@ const app = express();
 app.set("trust proxy", true); // if behind reverse proxy, req.ip is localhost, so need this set
 app.use(
 	cors({
-		origin: ["http://localhost:3000", "http://frontend-service:3000"],
+		origin: [
+			"http://localhost:3000", // for local development run without docker
+			"http://frontend:3000",
+		],
 	}),
 );
 app.use(express.json());
@@ -29,7 +32,7 @@ import { scheduleCronJobs } from "./cron";
 
 // start server
 const SERVER_PORT = parseInt(process.env.SERVER_PORT || "5000");
-app.listen(SERVER_PORT, () => {
+app.listen(SERVER_PORT, "0.0.0.0", () => {
 	console.log(`Server Running on Port ${SERVER_PORT}`);
 });
 

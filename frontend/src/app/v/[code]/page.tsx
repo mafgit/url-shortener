@@ -14,7 +14,7 @@ export default async function Visit({ params }: Props) {
 
 	try {
 		const res = await fetch(
-			process.env.INTERNAL_BACKEND_URL + "/v/" + code,
+			process.env.INTERNAL_BACKEND_URL + "/v/" + code, // internal backend url because server side rendered things run inside docker container where it can use the service name
 			{
 				redirect: "manual", // stop before going to the url, to avoid double redirects,
 				cache: "no-store", // to avoid stale effect due to next.js caching
@@ -26,8 +26,11 @@ export default async function Visit({ params }: Props) {
 			const url = res.headers.get("location") as string;
 			// console.log(url);
 			redirect(url);
-		} else {
+		} else if (res.status === 404 || res.status === 400) {
 			throw new Error("URL not found");
+		} else if (res.status === 429) {
+			alert("Rate limit exceeded. Please try again later.");
+			redirect("/");
 		}
 	} catch (e: unknown) {
 		// dont wanna catch this specific error otherwise redirect wouldnt take place, so rethrow it
@@ -40,7 +43,7 @@ export default async function Visit({ params }: Props) {
 					<span>URL Shortener</span>
 				</h1>
 				<p className="text-lg font-semibold text-red-600">
-					Error: This URL does not exist.
+					An Error Occurred
 				</p>
 			</div>
 		);

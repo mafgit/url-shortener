@@ -25,11 +25,11 @@ COPY . .
 # (for production)
 # EXPOSE 5000
 # RUN npm run build
-# CMD ["npm", "run", "start"]
+# CMD ["npm", "run", "server:prod"]
 
 # (for development)
 EXPOSE 5000
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "server:dev"]
 # CMD is to run commands when container is running, also only one CMD command can run in a Dockerfile
 
 # ---------------------------------------

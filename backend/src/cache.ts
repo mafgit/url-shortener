@@ -1,15 +1,15 @@
-import { createClient } from "redis";
+import { Redis } from "ioredis";
 
-const client = createClient({
-	url: process.env.REDIS_URI,
+const redisClient = new Redis(process.env.REDIS_URI as string, {
+	maxRetriesPerRequest: null, // needed for bullmq to work properly, otherwise max retries error may come for long tasks
 });
 
-client.on("error", (err) => {
+redisClient.on("error", (err) => {
 	console.error("Redis Client Error:", err);
 });
 
-client.connect().then(() => {
+redisClient.on("connect", () => {
 	console.log("Connected to Redis Client");
 });
 
-export default client;
+export default redisClient;

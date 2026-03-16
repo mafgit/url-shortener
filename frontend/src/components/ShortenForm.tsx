@@ -132,10 +132,11 @@ export default function ShortenForm({ setShortUrls }: Props) {
 							className="text-xs font-semibold rounded-md outline-none cursor-pointer"
 						>
 							<option value="never">Never</option>
-							<option value="1d">1d</option>
-							<option value="1w">1w</option>
-							<option value="1m">1m</option>
-							<option value="1y">1y</option>
+							<option value="1 min">1 min</option>
+							<option value="1 day">1 day</option>
+							<option value="1 week">1 week</option>
+							<option value="1 month">1 month</option>
+							<option value="1 year">1 year</option>
 						</select>
 					</div>
 				</div>
