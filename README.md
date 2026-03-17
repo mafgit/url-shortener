@@ -1,6 +1,6 @@
 # URL Shortener (In Progress)
 
-> Basic URL shortener to learn Docker & some related system design concepts & tools.
+> Basic URL shortener to learn Docker, Job-Queue System & some related system design concepts & tools.
 
 ### Tools & Concepts In Plan To Use:
 
