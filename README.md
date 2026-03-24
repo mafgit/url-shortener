@@ -22,10 +22,10 @@
 - Horizontal Scaling & Load Balancing ✅
 - Cron Job ✅
     - For scheduling deletion of expired short urls from PostgreSQL
-- Read Replica
 - Redis + PostgreSQL ✅
 - Next.js + Express.js ✅
-      <!-- - AWS -->
+- AWS (EC2 instance basics) ✅
+<!-- - Read Replica -->
 
 ## Screenshots
 
@@ -44,3 +44,4 @@ Docker:
     - nginx.conf
     - schema.sql
 1. `docker compose up` in the terminal inside the folder
+1. When all services are ready, visit `http://localhost`
