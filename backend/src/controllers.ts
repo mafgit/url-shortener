@@ -8,6 +8,8 @@ import { CODE_CACHE_EXPIRES_SEC } from "./constants";
 import { clickQueue } from "./queues";
 
 export async function shorten(req: Request, res: Response) {
+	console.log("Backend Instance:", process.env.HOSTNAME);
+
 	try {
 		const url: string = req.body["url"];
 		if (!isValidURL(url))
@@ -56,6 +58,8 @@ export async function shorten(req: Request, res: Response) {
 }
 
 export async function visit(req: Request, res: Response) {
+	console.log("Backend Instance:", process.env.HOSTNAME);
+
 	try {
 		const code = req.params.code as string;
 		// console.log(code);
@@ -115,10 +119,14 @@ export async function visit(req: Request, res: Response) {
 }
 
 export async function health(req: Request, res: Response) {
+	console.log("Backend Instance:", process.env.HOSTNAME);
+
 	res.json({ status: "ok" });
 }
 
 export async function checkClicks(req: Request, res: Response) {
+	console.log("Backend Instance:", process.env.HOSTNAME);
+
 	try {
 		// todo: check if ip is of owner
 		const { rows } = await db.query(

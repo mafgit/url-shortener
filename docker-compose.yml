@@ -23,7 +23,7 @@ services: # now service names will be used as host names (in connection strings)
             - "5432"
         volumes: # to make data persist when container closes
             - pgdata:/var/lib/postgresql/data
-            - ./backend/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+            - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
             # pgdata is a named volume that is gonna be created in the given container directory
             # (/var/lib/postgresql/data is official directory for postgres)
             # /docker-entrypoint-initdb.d is a special directory where if a file is mount it runs only once when first time created
@@ -44,7 +44,7 @@ services: # now service names will be used as host names (in connection strings)
         # env_file:
         #     - ./backend/.env.development
         environment:
-            - POSTGRES_URL=postgresql://postgres:root@localhost:5432/url-shortener
+            - POSTGRES_URL=postgresql://postgres:root@postgres:5432/url-shortener
             - REDIS_URL=redis://redis:6379
         depends_on: # recommended
             - redis
@@ -55,8 +55,9 @@ services: # now service names will be used as host names (in connection strings)
     worker:
         build: ./backend
         command: npm run worker:dev
-        env_file:
-            - ./backend/.env.development
+        environment:
+            - POSTGRES_URL=postgresql://postgres:root@postgres:5432/url-shortener
+            - REDIS_URL=redis://redis:6379
         depends_on:
             - redis
             - postgres
@@ -72,6 +73,7 @@ services: # now service names will be used as host names (in connection strings)
         volumes:
             - ./frontend:/app
             - /app/node_modules
+            - /app/.next # to prevent .next folder from being overridden by bind mount
         # env_file:
         #     - ./frontend/.env.development
         environment:
@@ -86,7 +88,7 @@ services: # now service names will be used as host names (in connection strings)
         ports:
             - "80:80"
         volumes:
-            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro # bind mount so that local conf file is copied to container, ro -> read only
+            - ./nginx.conf:/etc/nginx/nginx.conf:ro # bind mount so that local conf file is copied to container, ro -> read only
         depends_on:
             - frontend
             - backend
