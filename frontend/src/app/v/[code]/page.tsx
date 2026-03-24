@@ -21,7 +21,6 @@ export default async function Visit({ params }: Props) {
 			},
 		);
 
-		// console.log(res);
 		if (res.status === 302) {
 			const url = res.headers.get("location") as string;
 			// console.log(url);
@@ -29,10 +28,14 @@ export default async function Visit({ params }: Props) {
 		} else if (res.status === 404 || res.status === 400) {
 			throw new Error("URL not found");
 		} else if (res.status === 429) {
-			alert("Rate limit exceeded. Please try again later.");
-			redirect("/");
+			// alert("Rate limit exceeded. Please try again later.");
+			// redirect("/?error=rate_limit_exceeded");
+			throw new Error("Rate limit exceeded. Please try again later.");
+		} else {
+			throw new Error("An unexpected error occurred");
 		}
 	} catch (e: unknown) {
+		console.log("asdasd", e);
 		// dont wanna catch this specific error otherwise redirect wouldnt take place, so rethrow it
 		if (e instanceof Error && e.message === "NEXT_REDIRECT") throw e;
 
@@ -43,7 +46,7 @@ export default async function Visit({ params }: Props) {
 					<span>URL Shortener</span>
 				</h1>
 				<p className="text-lg font-semibold text-red-600">
-					An Error Occurred
+					{e instanceof Error ? e.message : "An error occurred"}
 				</p>
 			</div>
 		);

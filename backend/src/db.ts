@@ -6,7 +6,7 @@ const pool = new Pool({
 	// database: process.env.DB_NAME,
 	// password: process.env.DB_PASSWORD,
 	// port: parseInt(process.env.DB_PORT || "5432"),
-	connectionString: process.env.DATABASE_URI,
+	connectionString: process.env.POSTGRES_URL,
 });
 
 pool.on("error", (err) => {

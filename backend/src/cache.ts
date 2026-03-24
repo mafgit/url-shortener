@@ -1,6 +1,6 @@
 import { Redis } from "ioredis";
 
-const redisClient = new Redis(process.env.REDIS_URI as string, {
+const redisClient = new Redis(process.env.REDIS_URL as string, {
 	maxRetriesPerRequest: null, // needed for bullmq to work properly, otherwise max retries error may come for long tasks
 });
 

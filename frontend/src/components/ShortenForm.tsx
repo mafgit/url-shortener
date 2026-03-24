@@ -153,7 +153,7 @@ export default function ShortenForm({ setShortUrls }: Props) {
 						Short URL:
 					</h3>
 					<div
-						className="bg-white px-3 py-1 cursor-pointer hover:opacity-70 transition-all duration-300 rounded-full w-max flex gap-2 items-center justify-center"
+						className="bg-[#ffffffc4] px-3 py-1 cursor-pointer hover:opacity-70 transition-all duration-300 rounded-full w-max flex gap-2 items-center justify-center"
 						onClick={() => {
 							navigator.clipboard.writeText(shortUrl);
 							alert("Copied");

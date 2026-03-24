@@ -1,6 +1,9 @@
 "use client";
 import { ShortURL } from "@/types/ShortURL";
-import { deleteEntryFromLocalStorage, updateClicksInLocalStorage } from "@/utils/localStorage";
+import {
+	deleteEntryFromLocalStorage,
+	updateClicksInLocalStorage,
+} from "@/utils/localStorage";
 import { useState } from "react";
 import { FaArrowRight } from "react-icons/fa6";
 
@@ -32,7 +35,7 @@ export function ShortUrlEntry({ entry }: { entry: ShortURL }) {
 					else alert("URL is either invalid or expired");
 
 					// delete from ls
-					deleteEntryFromLocalStorage(entry)
+					deleteEntryFromLocalStorage(entry);
 				} else {
 					alert("Unexpected Error");
 					console.error(res);
