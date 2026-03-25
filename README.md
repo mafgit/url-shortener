@@ -20,6 +20,7 @@
     - Alternative: setImmediate in Node.js but it isn't as effective as BullMQ, which can handle retries and queue and worker management, and other stuff.
 - Nginx ✅
 - AWS (EC2 instance basics) ✅
+    - Deployed to an EC2 instance temporarily
 - Horizontal Scaling & Load Balancing ✅
 - Cron Job ✅
     - For scheduling deletion of expired short urls from PostgreSQL
