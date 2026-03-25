@@ -37,6 +37,9 @@ Docker:
 ![Docker](./readme-images/2.png)
 [DockerHub Profile](https://hub.docker.com/r/mafgit/)
 
+AWS Deployment (Temporary):
+![AWS](./readme-images/3.png)
+
 ## How to Run
 
 1. Have Docker desktop installed
