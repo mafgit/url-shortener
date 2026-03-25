@@ -31,16 +31,16 @@ services: # now service names will be used as host names (in connection strings)
 
     backend:
         build: ./backend
-        command: npm run server:dev # this override the Dockerfile's CMD instruction
+        command: node dist/index.js # this override the Dockerfile's CMD instruction
         # ports:
         #     - "5000:5000"
         expose: # just for internal communication
             - "5000"
-        volumes: # another type of volume -> bind mount (for development and changes reflection in container)
+        # volumes: # another type of volume -> bind mount (for development and changes reflection in container)
             # starts with . or / or ~ means bind mount not named volume
             # ./backend local/host folder bound to /app container directory
-            - ./backend:/app
-            - /app/node_modules # docker trick to prevent our node_modules folder from mounting in place of container's fresh installed node_modules
+            # - ./backend:/app
+            # - /app/node_modules # docker trick to prevent our node_modules folder from mounting in place of container's fresh installed node_modules
         # env_file:
         #     - ./backend/.env.development
         environment:
@@ -54,7 +54,7 @@ services: # now service names will be used as host names (in connection strings)
 
     worker:
         build: ./backend
-        command: npm run worker:dev
+        command: node dist/workers.js
         environment:
             - POSTGRES_URL=postgresql://postgres:root@postgres:5432/url-shortener
             - REDIS_URL=redis://redis:6379
@@ -64,20 +64,22 @@ services: # now service names will be used as host names (in connection strings)
         image: mafgit/url-shortener-backend:latest
 
     frontend:
-        build: ./frontend
-        command: npm run dev
+        build:
+            context: ./frontend
+            args: # to attach args before building nextjs app, otherwise environments are added after build before runtime, but nextjs requires that client side environment vars be baked in build
+                - NEXT_PUBLIC_BACKEND_URL=/api
+        command: node server.js
         # ports:
         #     - "3000:3000"
         expose:
             - "3000"
-        volumes:
-            - ./frontend:/app
-            - /app/node_modules
-            - /app/.next # to prevent .next folder from being overridden by bind mount
+        # volumes:
+        #     - ./frontend:/app
+        #     - /app/node_modules
+            # - /app/.next
         # env_file:
         #     - ./frontend/.env.development
         environment:
-            - NEXT_PUBLIC_BACKEND_URL=/api
             - INTERNAL_BACKEND_URL=http://nginx/api
         depends_on:
             - backend

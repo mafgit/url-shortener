@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:22-alpine AS builder
 # node:22-alpine is the base docker image that has npm and node v20 and some other things are preinstalled
 
 # container's directory will be:
@@ -22,15 +22,31 @@ RUN npm ci
 # remaining code files
 COPY . .
 
-# (for production)
-# EXPOSE 5000
-# RUN npm run build
-# CMD ["npm", "run", "server:prod"]
+ENV NODE_ENV=production
+
+RUN npm run build
+
+
+FROM node:22-alpine AS runner
+
+WORKDIR /app
+
+# copy only necessary files
+COPY --from=builder  /app/dist ./dist
+COPY --from=builder  /app/package.json /app/package-lock.json ./
+
+#  install only prod packages
+RUN npm ci --omit=dev
+
+EXPOSE 5000
 
 # (for development)
-EXPOSE 5000
-CMD ["npm", "run", "server:dev"]
+# CMD ["npm", "run", "server:dev"]
 # CMD is to run commands when container is running, also only one CMD command can run in a Dockerfile
+
+# (for production)
+CMD ["node", "dist/index.js"]
+
 
 # ---------------------------------------
 # to build an image from scratch (i.e. when using Dockerfile instead of running a directly pulled image):

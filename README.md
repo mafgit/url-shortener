@@ -19,12 +19,12 @@
     - So that response is sent to the user immediately, and then the database queries afterwards would handled by the worker instead of doing all that in the network request before sending response to user.
     - Alternative: setImmediate in Node.js but it isn't as effective as BullMQ, which can handle retries and queue and worker management, and other stuff.
 - Nginx ✅
+- AWS (EC2 instance basics) ✅
 - Horizontal Scaling & Load Balancing ✅
 - Cron Job ✅
     - For scheduling deletion of expired short urls from PostgreSQL
 - Redis + PostgreSQL ✅
 - Next.js + Express.js ✅
-- AWS (EC2 instance basics) ✅
 <!-- - Read Replica -->
 
 ## Screenshots

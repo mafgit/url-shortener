@@ -1,13 +1,20 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import path from "path";
 
 // dotenv
+
 const env =
 	process.env.NODE_ENV === "production" ? "production" : "development";
-const envPath = path.resolve(process.cwd(), `.env.${env}`);
-dotenv.config({ quiet: true, path: envPath });
+
+if (env !== "production") {
+	try {
+		const envPath = path.resolve(process.cwd(), `.env.${env}`);
+		require("dotenv").config({ quiet: true, path: envPath });
+	} catch (err) {
+		console.warn(`Couldn't load .env.${env} file, skipping...`);
+	}
+}
 
 // server
 const app = express();
