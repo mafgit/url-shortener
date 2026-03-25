@@ -1,5 +1,6 @@
 "use client";
 import { ShortURL } from "@/types/ShortURL";
+import { copyToClipboard } from "@/utils/clipboard";
 import { useState } from "react";
 import { FaCopy, FaLink } from "react-icons/fa6";
 
@@ -155,8 +156,7 @@ export default function ShortenForm({ setShortUrls }: Props) {
 					<div
 						className="bg-[#ffffffc4] px-3 py-1 cursor-pointer hover:opacity-70 transition-all duration-300 rounded-full w-max flex gap-2 items-center justify-center"
 						onClick={() => {
-							navigator.clipboard.writeText(shortUrl);
-							alert("Copied");
+							copyToClipboard(shortUrl);
 						}}
 					>
 						<p className="font-mono wrap-anywhere">{shortUrl}</p>

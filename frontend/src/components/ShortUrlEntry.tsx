@@ -1,5 +1,6 @@
 "use client";
 import { ShortURL } from "@/types/ShortURL";
+import { copyToClipboard } from "@/utils/clipboard";
 import {
 	deleteEntryFromLocalStorage,
 	updateClicksInLocalStorage,
@@ -61,8 +62,7 @@ export function ShortUrlEntry({ entry }: { entry: ShortURL }) {
 			<div className="flex gap-2 items-center justify-center flex-wrap">
 				<div
 					onClick={() => {
-						navigator.clipboard.writeText(entry.shortUrl);
-						alert("Copied");
+						copyToClipboard(entry.shortUrl);
 					}}
 					className="text-blue-800 justify-center flex-wrap cursor-pointer w-max border border-[#6cd5ffb7] bg-[#b9ebffb7] text-sm font-mono px-2 py-1 rounded-lg flex gap-2 items-center"
 				>
@@ -82,8 +82,8 @@ export function ShortUrlEntry({ entry }: { entry: ShortURL }) {
 						// }
 						className="inline mr-1 text-center"
 						onClick={() => {
-							navigator.clipboard.writeText(entry.fullUrl);
-							alert("Copied");
+							copyToClipboard(entry.fullUrl)
+							
 						}}
 					>
 						{showFullUrlFully
