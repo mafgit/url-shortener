@@ -1,4 +1,4 @@
-# URL Shortener (In Progress)
+# URL Shortener
 
 > Basic URL shortener to learn Docker, Job-Queue System & some related system design concepts & tools.
 
