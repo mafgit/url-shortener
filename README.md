@@ -5,7 +5,7 @@
 ## Table of Contents
 
 - [Tools and Concepts](#tools-and-concepts)
-- [Screenshots](#screenshots)
+- [Architecture & Screenshots](#architecture-and-screenshots)
 - [How to Run](#how-to-run)
 
 ## Tools and Concepts
@@ -26,9 +26,13 @@
     - For scheduling deletion of expired short urls from PostgreSQL
 - Redis + PostgreSQL ✅
 - Next.js + Express.js ✅
-<!-- - Read Replica -->
+  <!-- - Read Replica -->
 
-## Screenshots
+## Architecture and Screenshots
+
+Architecture:
+
+![Architecture](./readme-images/architecture.drawio.png)
 
 Frontend:
 ![Frontend](./readme-images/1.png)
